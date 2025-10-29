@@ -1,8 +1,32 @@
 import os
 import re
 import yt_dlp
+import msvcrt
+import pyperclip
 from datetime import datetime
-import msvcrt  # ✅ Dùng để chờ phím bất kỳ (Windows)
+
+
+def get_tiktok_url():
+    """Tự động lấy link TikTok từ clipboard, nếu không có thì yêu cầu nhập tay."""
+    clipboard = pyperclip.paste().strip()
+
+    # Kiểm tra xem clipboard có chứa link TikTok không
+    if re.match(r"^https?://(www\.)?tiktok\.com/", clipboard):
+        print(f"📋 Đã phát hiện link TikTok trong clipboard:\n👉 {clipboard}\n")
+        use_clipboard = input("Dùng link này? (Y/n): ").strip().lower()
+        if use_clipboard in ("", "y", "yes"):
+            return clipboard
+
+    # Nếu không có hoặc người dùng chọn nhập tay
+    return input("Nhập đường dẫn TikTok (kênh hoặc playlist): ").strip()
+
+
+def log_error_if_failed(d, error_log):
+    """Ghi log nếu video bị lỗi tải."""
+    if d.get("status") == "error":
+        with open(error_log, "a", encoding="utf-8") as f:
+            f.write(f"[{datetime.now()}] ERROR: {d.get('filename', 'unknown file')}\n")
+
 
 def download_tiktok_videos(url):
     base_dir = os.path.join(os.path.expanduser("~"), "Downloads", "tiktok")
@@ -42,7 +66,9 @@ def download_tiktok_videos(url):
         "postprocessors": [
             {"key": "FFmpegVideoRemuxer", "preferedformat": "mp4"},
         ],
-        "extractor_args": {"tiktok": {"use_har_extractor": ["true"]}},  # giả trình duyệt
+        # ✅ Giúp TikTok tránh lỗi impersonation
+        "extractor_args": {"tiktok": {"use_har_extractor": ["true"]}},
+        # ✅ Ghi log lỗi nếu video lỗi
         "progress_hooks": [
             lambda d: log_error_if_failed(d, error_log)
         ],
@@ -59,19 +85,19 @@ def download_tiktok_videos(url):
     print(f"⚠️  Nếu có lỗi, xem file log: {error_log}\n")
 
 
-def log_error_if_failed(d, error_log):
-    """Ghi log nếu video bị lỗi tải."""
-    if d.get('status') == 'error':
-        with open(error_log, "a", encoding="utf-8") as f:
-            f.write(f"[{datetime.now()}] ERROR: {d.get('filename', 'unknown file')}\n")
-
-
 if __name__ == "__main__":
     print("=== 🧠 TikTok Downloader Auto Tool ===")
-    url = input("Nhập đường dẫn TikTok (kênh hoặc playlist): ").strip()
-    download_tiktok_videos(url)
-    print("\n✅ Hoàn tất! Kiểm tra thư mục Downloads/tiktok.\n")
 
-    # ✅ Chờ phím bất kỳ để thoát (thay vì chỉ Enter)
+    try:
+        url = get_tiktok_url()
+        if not url:
+            print("⚠️ Không có đường dẫn TikTok hợp lệ. Thoát...")
+        else:
+            download_tiktok_videos(url)
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n✅ Hoàn tất! Kiểm tra thư mục Downloads/tiktok.\n")
     print("👉 Nhấn phím bất kỳ để thoát...")
     msvcrt.getch()
