@@ -3,6 +3,9 @@ import re
 import yt_dlp
 from datetime import datetime
 
+# Build exe
+# pip install pyinstaller
+# pyinstaller --onefile app.py
 def download_tiktok_videos(url):
     base_dir = os.path.join(os.path.expanduser("~"), "Downloads", "tiktok")
 
@@ -27,8 +30,7 @@ def download_tiktok_videos(url):
 
     # ✅ Cấu hình yt-dlp
     ydl_opts = {
-        # Đặt tên file xuất ra chỉ gồm ID.mp4
-        "outtmpl": os.path.join(save_path, "%(id)s.%(ext)s"),
+        "outtmpl": os.path.join(save_path, "%(id)s.%(ext)s"),  # tên file chỉ gồm ID
         "format": "mp4",
         "retries": 15,                   # retry tối đa 15 lần nếu lỗi mạng
         "fragment_retries": 15,          # retry từng mảnh video
@@ -42,21 +44,16 @@ def download_tiktok_videos(url):
         "postprocessors": [
             {"key": "FFmpegVideoRemuxer", "preferedformat": "mp4"},
         ],
-        # ✅ Giúp TikTok tránh lỗi impersonation
-        "extractor_args": {"tiktok": {"use_har_extractor": ["true"]}},
-        # ✅ Ghi log lỗi nếu video lỗi
+        "extractor_args": {"tiktok": {"use_har_extractor": ["true"]}},  # giả trình duyệt
         "progress_hooks": [
             lambda d: log_error_if_failed(d, error_log)
         ],
     }
 
-    # ✅ Hiển thị thông tin
     print(f"\n🚀 Đang tải video từ: {url}")
     print(f"💾 Lưu vào: {save_path}")
-    print("📋 Bỏ qua các video đã tải (theo ID).")
-    print("")
+    print("📋 Bỏ qua các video đã tải (theo ID).\n")
 
-    # ✅ Bắt đầu tải
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
@@ -76,3 +73,6 @@ if __name__ == "__main__":
     url = input("Nhập đường dẫn TikTok (kênh hoặc playlist): ").strip()
     download_tiktok_videos(url)
     print("\n✅ Hoàn tất! Kiểm tra thư mục Downloads/tiktok.\n")
+
+    # ✅ Chờ người dùng nhấn phím trước khi thoát
+    input("👉 Nhấn Enter để thoát...")
