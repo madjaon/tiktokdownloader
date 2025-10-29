@@ -1,9 +1,38 @@
 import os
 import re
 import yt_dlp
-import msvcrt
+import sys
+import win32com.client
 import pyperclip
 from datetime import datetime
+
+# pyinstaller --onefile --icon=icon.ico --hidden-import=win32com --hidden-import=win32com.shell app.py
+def create_shortcut():
+    """Tự động tạo shortcut TikTok Downloader trên Desktop."""
+    try:
+        from win32com.shell import shell, shellcon # type: ignore
+        desktop = shell.SHGetFolderPath(0, shellcon.CSIDL_DESKTOP, None, 0)
+
+        shortcut_path = os.path.join(desktop, "TikTok Downloader.lnk")
+
+        # ✅ Xác định đúng đường dẫn đang chạy (dù là .py hay .exe)
+        if getattr(sys, 'frozen', False):
+            exe_path = sys.executable  # Khi chạy file .exe (PyInstaller)
+        else:
+            exe_path = os.path.abspath(__file__)  # Khi chạy file .py
+
+        if not os.path.exists(shortcut_path):
+            shell_obj = win32com.client.Dispatch("WScript.Shell")
+            shortcut = shell_obj.CreateShortcut(shortcut_path)
+            shortcut.TargetPath = exe_path
+            shortcut.WorkingDirectory = os.path.dirname(exe_path)
+            shortcut.IconLocation = os.path.join(os.path.dirname(exe_path), "icon.ico")
+            shortcut.Save()
+            print(f"🎯 Đã tạo shortcut trên Desktop: {shortcut_path}\n")
+        else:
+            print("✅ Shortcut đã tồn tại.")
+    except Exception as e:
+        print(f"⚠️ Không thể tạo shortcut: {e}")
 
 
 def get_tiktok_url():
@@ -89,6 +118,7 @@ if __name__ == "__main__":
     print("=== 🧠 TikTok Downloader Auto Tool ===")
 
     try:
+        create_shortcut()
         url = get_tiktok_url()
         if not url:
             print("⚠️ Không có đường dẫn TikTok hợp lệ. Thoát...")
@@ -99,5 +129,4 @@ if __name__ == "__main__":
         print(f"❌ Lỗi: {e}")
 
     print("\n✅ Hoàn tất! Kiểm tra thư mục Downloads/tiktok.\n")
-    print("👉 Nhấn phím bất kỳ để thoát...")
-    msvcrt.getch()
+    os.system("pause")  # Dừng lại, chờ nhấn phím bất kỳ
