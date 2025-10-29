@@ -2,10 +2,8 @@ import os
 import re
 import yt_dlp
 from datetime import datetime
+import msvcrt  # ✅ Dùng để chờ phím bất kỳ (Windows)
 
-# Build exe
-# pip install pyinstaller
-# pyinstaller --onefile app.py
 def download_tiktok_videos(url):
     base_dir = os.path.join(os.path.expanduser("~"), "Downloads", "tiktok")
 
@@ -74,5 +72,6 @@ if __name__ == "__main__":
     download_tiktok_videos(url)
     print("\n✅ Hoàn tất! Kiểm tra thư mục Downloads/tiktok.\n")
 
-    # ✅ Chờ người dùng nhấn phím trước khi thoát
-    input("👉 Nhấn Enter để thoát...")
+    # ✅ Chờ phím bất kỳ để thoát (thay vì chỉ Enter)
+    print("👉 Nhấn phím bất kỳ để thoát...")
+    msvcrt.getch()
