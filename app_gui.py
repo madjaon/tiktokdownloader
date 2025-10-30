@@ -79,10 +79,10 @@ class VideoDownloaderApp(ctk.CTk):
                 "💡 Bạn có thể nhập link từ các nguồn sau:\n"
                 "• YouTube: video, playlist hoặc kênh\n"
                 "• TikTok: video, playlist hoặc toàn bộ kênh\n"
-                "• Facebook, Instagram, Twitter, v.v...\n\n"
+                "• Facebook, Instagram, Twitter, Bilibili v.v...\n\n"
                 "👉 Hệ thống sẽ tự nhận dạng và tải video phù hợp.\n"
                 "👉 Có thể dán link 1 video đơn lẻ hoặc link danh sách.\n"
-                "👉 Video sẽ được lưu vào thư mục riêng: \nDownloads/videos/tiktok/ hoặc Downloads/videos/youtube/"
+                "👉 Video sẽ được lưu vào thư mục riêng như: \nDownloads/videos/tiktok/ hoặc Downloads/videos/youtube/"
             ),
             font=("Arial", 14),
             justify="left",
@@ -221,10 +221,6 @@ class VideoDownloaderApp(ctk.CTk):
             platform = "twitter"
         elif "bilibili" in url_lower:
             platform = "bilibili"
-        elif "vimeo" in url_lower:
-            platform = "vimeo"
-        elif "viki" in url_lower or "vikichannel" in url_lower:
-            platform = "vikichannel"
 
         # 📁 Tạo thư mục lưu theo từng nền tảng
         save_path = os.path.join(base_dir, platform)
@@ -254,6 +250,11 @@ class VideoDownloaderApp(ctk.CTk):
             "quiet": True,
             "progress_hooks": [self.hook_progress],
         }
+
+        # Một số nền tảng cần cấu hình riêng
+        if platform in ["facebook", "instagram", "twitter", "bilibili"]:
+            ydl_opts["cookiefile"] = "cookies.txt"
+            # ydl_opts["cookiesfrombrowser"] = ("chrome", "Default")  # nếu bạn đăng nhập Facebook/Instagram trên Chrome
 
         try:
             self.log(f"🚀 Bắt đầu tải từ nền tảng: {platform}")
