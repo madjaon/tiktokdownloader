@@ -6,7 +6,7 @@ import yt_dlp
 import pyperclip
 import win32com.client
 import tkinter as tk
-import customtkinter as ctk # type: ignore
+import customtkinter as ctk
 from tkinter import messagebox
 from datetime import datetime
 import subprocess
