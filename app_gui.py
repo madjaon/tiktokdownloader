@@ -6,7 +6,7 @@ import yt_dlp
 import pyperclip
 import win32com.client
 import tkinter as tk
-import customtkinter as ctk
+import customtkinter as ctk # type: ignore
 from tkinter import messagebox
 from datetime import datetime
 import subprocess
@@ -15,7 +15,6 @@ import subprocess
 # ⚙️ Lệnh đóng gói EXE:
 # pyinstaller --noconsole --onefile --icon=icon.ico --hidden-import=win32com --hidden-import=win32com.shell app_gui.py
 # =========================
-
 
 # === Hàm tạo shortcut trên Desktop ===
 def create_shortcut():
@@ -40,7 +39,6 @@ def create_shortcut():
     except Exception as e:
         print("⚠️ Không thể tạo shortcut:", e)
 
-
 # === Hàm lấy link video từ clipboard ===
 def get_video_url():
     """Tự động lấy link hợp lệ từ clipboard (TikTok, YouTube, Facebook...)"""
@@ -48,7 +46,6 @@ def get_video_url():
     if re.match(r"^https?://", clipboard):
         return clipboard
     return ""
-
 
 # === Lớp GUI chính ===
 class VideoDownloaderApp(ctk.CTk):
