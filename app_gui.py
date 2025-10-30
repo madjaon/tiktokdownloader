@@ -210,16 +210,24 @@ class VideoDownloaderApp(ctk.CTk):
 
         # 🔎 Xác định nền tảng (TikTok, YouTube, Facebook, Instagram...)
         platform = "others"
-        for name in ["tiktok", "youtube", "youtu.be", "facebook", "fb.watch", "instagram", "twitter", "x.com"]:
-            if name in url.lower():
-                platform = (
-                    "youtube" if "youtu" in name else
-                    "facebook" if "fb" in name else
-                    "instagram" if "insta" in name else
-                    "twitter" if "x.com" in name or "twitter" in name else
-                    "tiktok"
-                )
-                break
+        url_lower = url.lower()
+
+        if "tiktok" in url_lower:
+            platform = "tiktok"
+        elif "youtube" in url_lower or "youtu.be" in url_lower:
+            platform = "youtube"
+        elif "facebook" in url_lower or "fb.watch" in url_lower:
+            platform = "facebook"
+        elif "instagram" in url_lower:
+            platform = "instagram"
+        elif "twitter" in url_lower or "x.com" in url_lower:
+            platform = "twitter"
+        elif "bilibili" in url_lower:
+            platform = "bilibili"
+        elif "vimeo" in url_lower:
+            platform = "vimeo"
+        elif "viki" in url_lower or "vikichannel" in url_lower:
+            platform = "vikichannel"
 
         # 📁 Tạo thư mục lưu theo từng nền tảng
         save_path = os.path.join(base_dir, platform)
