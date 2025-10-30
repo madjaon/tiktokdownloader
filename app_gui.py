@@ -126,7 +126,12 @@ class VideoDownloaderApp(ctk.CTk):
         self.status_label.pack(pady=10)
 
         self.log_box = tk.Text(
-            self, height=4, wrap="word", bg="#1e1e1e", fg="#dcdcdc"
+            self,
+            height=4,
+            wrap="word",
+            bg="#1e1e1e",
+            fg="#dcdcdc",
+            state="disabled",  # 🚫 chặn nhập từ người dùng
         )
         self.log_box.pack(fill="both", expand=True, padx=10, pady=10)
 
@@ -152,8 +157,10 @@ class VideoDownloaderApp(ctk.CTk):
             messagebox.showwarning("Clipboard", "Không phát hiện link hợp lệ trong clipboard.")
 
     def log(self, message):
+        self.log_box.configure(state="normal")  # bật tạm để ghi
         self.log_box.insert(tk.END, f"{message}\n")
         self.log_box.see(tk.END)
+        self.log_box.configure(state="disabled")  # khóa lại
         self.update_idletasks()
 
     def disable_inputs(self):
